@@ -1,0 +1,11 @@
+<div class="row">
+  <ul class="breadcrumb">
+    <li>Albums</li>
+  </ul>
+</div>
+
+<div class="album">
+  <div *ngFor="let album of albums; let i = index;" class="picture" [routerLink]="[album.id]">
+    <img [src]="album.coverUrl" alt="album.name">
+  </div>
+</div>

@@ -1,0 +1,31 @@
+{
+  "name": "fbgram-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "start": "sls offline start",
+    "deploy:server": "sls deploy",
+    "deploy:client": "sls client deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.189.0",
+    "aws-signature-v4": "^1.2.1",
+    "fb": "^2.0.0",
+    "joi": "^13.1.2",
+    "jsonwebtoken": "^8.2.0",
+    "uuid": "^3.2.1"
+  },
+  "devDependencies": {
+    "node-gyp": "^3.6.2",
+    "serverless": "^1.26.0",
+    "serverless-dynamodb-local": "^0.2.27",
+    "serverless-dynamodb-ttl": "^0.1.1",
+    "serverless-finch": "^1.4.0",
+    "serverless-iot-local": "^1.1.1",
+    "serverless-offline": "^3.17.0"
+  }
+}

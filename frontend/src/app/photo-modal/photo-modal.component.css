@@ -1,0 +1,145 @@
+.photo-container {
+    display: flex;
+    flex-direction: row;
+    height: 80vh;
+}
+
+.photo-container > .close {
+    position: absolute;
+    top: 0;
+    right: 5px;
+}
+
+.photo-section {
+    position: relative;
+    width: 60%; 
+    height: 100%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.photo {
+    position: relative;
+    width: 100%; 
+    height: 100%; 
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 5px gray;
+}
+
+.photo-section > .controls {
+    position: absolute;
+    bottom: -50px;
+    transition: all ease-in 0.2s;
+
+    background: transparent;
+    text-shadow: 0 0 1px black;
+    border-top: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    border-right: 1px solid lightgray;
+    border-radius: 5px 5px 0 0;
+}
+
+.photo-section:hover > .controls {
+    bottom: 0px;
+}
+
+.photo-section > .controls > * {
+    display: inline;
+    text-shadow: 0 0 1px gray;
+    background: #f8f8f8;
+}
+.photo-section > .controls > button {
+    border: none;
+    font-size: 18px;
+    padding: 5px 10px;
+    outline: none;
+}
+
+.photo-section > .controls > div {
+    font-size: 24px;
+}
+
+.photo img {
+    max-width: 100%;
+    max-height: 100%; 
+}
+
+.comments {
+    display: flex;
+    flex-direction: column;
+    width: 40%; 
+}
+
+.comment-messages {
+    padding-top: 20px;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #f8f8f8;
+} 
+
+.message {
+    margin: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;    
+    box-shadow: 0px 1px 1px grey;
+}
+
+.message > .sender {
+    font-weight: bold;
+    color: darkgray;
+}
+
+.sender > img {
+    width: 25px;
+    border-radius: 50%;
+    box-shadow: 0px 1px 1px gray;
+    margin-right: 5px;
+}
+.text-group {
+    display: flex;
+    flex-direction: row;
+    min-height: 100px;
+}
+
+.text-group > textarea {
+    width: 100%;
+    resize: none;
+    padding: 10px;
+    color: #373737;
+}
+
+.text-group > textarea ~ .text-group-addon {
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+}
+
+@media screen and (max-width: 768px) {
+    .photo-container {
+        flex-direction: column;
+    }
+
+    .photo-section {
+        height: 80vh;
+    }
+
+    .photo-section > .controls {
+        bottom: 0px;
+    }
+    
+    .photo-section ,
+    .comments {
+        width: 100%; 
+    }
+
+    .photo-container {
+        flex-direction: column;
+        height: auto;
+    }
+}

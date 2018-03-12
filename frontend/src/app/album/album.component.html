@@ -1,0 +1,14 @@
+<div class="row">
+  <ul class="breadcrumb">
+    <li>
+      <a [routerLink]="['/app', 'users', params.userId, 'albums']">Albums</a>
+    </li>
+    <li>Album</li>
+  </ul>
+</div>
+
+<div class="album">
+  <div *ngFor="let picture of pictures; let i = index;" class="picture" (click)="openPhotoDialog(picture, i)">
+    <img [src]="picture.url" alt="picture.name">
+  </div>
+</div>

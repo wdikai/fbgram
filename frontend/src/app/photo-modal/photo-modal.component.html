@@ -1,0 +1,39 @@
+<div class="photo-container">
+  <div class="photo-section">
+    <div class="photo">
+      <img [src]="photo?.url" [alt]="photo?.name">
+    </div>
+    <div class="controls">
+      <button (click)="previous.emit()">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+      </button>
+      <button (click)="play()">
+        <span class="glyphicon" [ngClass]="{'glyphicon-play': !isPlay, 'glyphicon-pause': isPlay}"></span>
+      </button>
+      <!-- <div>
+        {{ index + 1 }} / {{ total }}
+      </div> -->
+      <button (click)="next.emit()">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+      </button>
+    </div>
+  </div>
+  <div class="comments">
+    <div class="comment-messages" (scroll)="onScroll($event)">
+      <div *ngFor="let message of messages" class="message">
+        <div class="sender"><img [src]="message?.sender?.picture">{{message?.sender?.fullName}} ({{message?.createdAt}})</div>
+        <p>{{message?.message}}</p>
+      </div>
+    </div>
+    <div class="text-group">
+      <textarea placeholder="Enter text" #messageField></textarea>
+      <button class="btn btn-default text-group-addon" (click)="sendComment(messageField)">
+        <span class="glyphicon glyphicon-send"></span>
+      </button>
+    </div>
+  </div>
+
+  <button type="button" class="close" (click)="modalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
