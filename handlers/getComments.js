@@ -1,26 +1,15 @@
-const joi = require('joi');
-
 const FacebookService = require('../services/facebookService');
 const Comment = require('../models/comment');
 const Validator = require('../services/validator');
 const config = require('../config');
+const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
+const logger = new (require('../services/logger'))('get comments');
+
+const {photo, pagination} = reqiore('../rules/user.js');
 
 exports.handler = (event, context, callback) => {
     const body = event.queryStringParameters || {};
-    const validator = new Validator({
-        photoId: joi
-            .string()
-            .required(),
-        limit: joi
-            .string()
-            .required(),
-
-        lastEvaluatedKey: joi
-            .object()
-            .keys()
-            .empty('undefined')
-            .optional()
-    });
+    const validator = new Validator(Object.assign({}, photo, pagination));
 
     validator
         .validate(body)
@@ -28,25 +17,18 @@ exports.handler = (event, context, callback) => {
             Limit: body.limit,
             ExclusiveStartKey: body.lastEvaluatedKey
         }))
-        .then(({ rows, totalCount, lastEvaluatedKey }) => callback(null, {
-            statusCode: 200,
-            body: JSON.stringify({
-                data: rows,
-                pagination: {totalCount, lastEvaluatedKey}
-            }),
-        }))
-        .catch(error => {
-            console.error("Error:", error);
-            callback(null, {
-                statusCode: error.status || 422,
-                headers: {
-                  "Access-Control-Allow-Origin" : "*", 
-                  "Access-Control-Allow-Credentials" : true
+        .then(({ rows, totalCount, lastEvaluatedKey }) => {
+            logger.info('totalCount =', totalCount, '; lastEvaluatedKey:', lastEvaluatedKey);
+            callback(null, responseFormatter({
+                status: 200,
+                body: {
+                    data: rows,
+                    pagination: { totalCount, lastEvaluatedKey }
                 },
-                body: JSON.stringify({
-                    message: error.message,
-                    stack: config.RETURN_STACK ? error.stack : null
-                }),
-            })
+            }));
+        })
+        .catch(error => {
+            logger.info(error);
+            callback(null, errorFormatter(error));
         });
 }

@@ -1,15 +1,15 @@
 
 import { Inject, Injectable } from "@angular/core";
-import {FacebookService, LoginStatus} from "ngx-facebook";
+import { HttpClient } from "@angular/common/http";
+import {FacebookService, LoginStatus, LoginResponse} from "ngx-facebook";
 
 import { Observable } from "rxjs/Observable";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import "rxjs/add/observable/fromPromise";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/do";
-import { LoginResponse } from "ngx-facebook";
+
 import { environment } from "environments/environment";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { HttpClient } from "@angular/common/http";
 
 export enum AuthStatuses {
     authorized = "connected",

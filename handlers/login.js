@@ -1,18 +1,15 @@
-const joi = require('joi');
-
 const FacebookService = require('../services/facebookService');
 const User = require('../models/user');
 const Session = require('../models/session');
 const Validator = require('../services/validator');
 const config = require('../config');
+const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
+const logger = new (require('../services/logger'))('login');
+const { token } = reqiore('../rules/user');
 
 exports.handler = (event, context, callback) => {
     const body = JSON.parse(event.body) || {};
-    const validator = new Validator({
-        accessToken: joi
-            .string()
-            .required()
-    });
+    const validator = new Validator(token);
 
     validator
         .validate(body)
@@ -23,24 +20,16 @@ exports.handler = (event, context, callback) => {
             fullName: fbUser.name,
             picture: fbUser.picture && fbUser.picture.data && fbUser.picture.data.url
         }))
-        .then(user => new Session(user).save())
-        .then(session => ({
-            credentials: session,
-            profile: session.user
-        }))
-        .then((session) => callback(null, {
-            statusCode: 201,
-            headers: {
-              "Access-Control-Allow-Origin" : "*", 
-              "Access-Control-Allow-Credentials" : true
-            },
-            body: JSON.stringify(session),
-        }))
-        .catch(error => callback(null, {
-            statusCode: error.status || 422,
-            body: JSON.stringify({
-                message: error.message,
-                stack: config.RETURN_STACK ? error.stack : null
-            }),
-        }));
+        .then(user => Session.createByUse(user))
+        .then((session) => {
+            logger.info(session);
+            callback(null, responseFormatter({
+                status: 201,
+                body: session
+            }));
+        })
+        .catch(error => {
+            logger.info(error);
+            callback(null, errorFormatter(error));
+        });
 }

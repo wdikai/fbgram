@@ -10,7 +10,7 @@ const now = () => Date.now();
 
 class Session {
     static get(token) {
-        const session = new Session();
+        let session;
         const params = { TableName: Session.tableName, Key: { token } };
         return Session
             .verifyToken(token)
@@ -19,25 +19,18 @@ class Session {
                 .promise()
             )
             .then(result => {
-                const {userId, token, tokenExpireAt, refreshToken, refreshTokenExpireAt} = result.Item;
-
-                if(!result) {
+                if (!result) {
                     const error = new Error('Invalid token');
                     error.status = 401;
 
                     throw error;
                 }
 
-                session.userId = userId;
-                session.token = token;
-                session.tokenExpireAt = tokenExpireAt;
-                session.refreshToken = refreshToken;
-                session.refreshTokenExpireAt = refreshTokenExpireAt;
-
-                return User.get(userId);
+                session = new Session(result.Item);
+                return User.get(result.Item.userId);
             })
             .then(user => {
-                if(!user) {
+                if (!user) {
                     const error = new Error('Invalid token');
                     error.status = 401;
 
@@ -53,62 +46,71 @@ class Session {
         return 'sessions';
     }
 
-    constructor(user) {
-        let credentials;
-        this.user = user;
+    static createByUse(user) {
+        const session = new Session(Session.generateCredentials(user));
+        session.user = user;
+
+        return session.save();
+    }
+
+    static generateCredentials(user) {
+        const tokenParams = { id: user.id, key: uuid.v4() };
+        const tokenExpireAt = now() + config.JWT_LIFE_TIME;
+        const token = Session.getToken(tokenParams, tokenExpireAt);
+
+        return {
+            userId: user.id,
+            token,
+            tokenExpireAt,
+        };
+    }
+
+    static getToken(data, expireAt) {
+        return jwt.sign({ exp: expireAt, data }, config.JWT_SECRET_KEY);
+    }
+
+    static verifyToken(token, options = {}) {
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, config.JWT_SECRET_KEY, options, (error, data) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                resolve(data);
+            });
+        })
+    }
+
+    constructor({ userId, token, tokenExpireAt }) {
         this.dataValues = {};
 
-        if (user) {
-            this.userId = user.id;
-            credentials = Session.generateCredentials(user);
-        }
-
-        if (credentials) {
-            this.token = credentials.token;
-            this.tokenExpireAt = credentials.tokenExpireAt;
-            this.refreshToken = credentials.refreshToken;
-            this.refreshTokenExpireAt = credentials.refreshTokenExpireAt;
-        }
+        this.userId = userId;
+        this.token = token;
+        this.tokenExpireAt = tokenExpireAt;
     }
-    
-    get userId () {
+
+    get userId() {
         this.dataValues.userId;
     }
-    
-    set userId (value) {
+
+    set userId(value) {
         this.dataValues.userId = value;
     }
-    
-    get token () {
+
+    get token() {
         this.dataValues.token;
     }
-    
-    set token (value) {
+
+    set token(value) {
         this.dataValues.token = value;
     }
 
-    get tokenExpireAt () {
+    get tokenExpireAt() {
         this.dataValues.tokenExpireAt;
     }
-    
-    set tokenExpireAt (value) {
+
+    set tokenExpireAt(value) {
         this.dataValues.tokenExpireAt = value;
-    }
-
-    get refreshToken () {
-        this.dataValues.refreshToken;
-    }
-    
-    set refreshToken (value) {
-        this.dataValues.refreshToken = value;
-    }
-
-    get refreshTokenExpireAt () {
-        this.dataValues.refreshTokenExpireAt;
-    }
-    
-    set refreshTokenExpireAt (value) {
-        this.dataValues.refreshTokenExpireAt = value;
     }
 
     save() {
@@ -125,45 +127,12 @@ class Session {
 
     toJSON() {
         return {
-            token: this.dataValues.token,
-            tokenExpireAt: new Date(this.dataValues.tokenExpireAt).toISOString(),
-            refreshToken: this.dataValues.refreshToken,
-            refreshTokenExpireAt: new Date(this.dataValues.refreshTokenExpireAt).toISOString()
+            credentials: {
+                token: this.dataValues.token,
+                tokenExpireAt: new Date(this.dataValues.tokenExpireAt).toISOString()
+            },
+            profile: this.user
         };
-    }
-
-    static generateCredentials(user) {
-        const tokenParams = { id: user.id, key: uuid.v4() };
-        const refreshParams = Object.assign({ isRefreshToken: true }, tokenParams);
-
-        const tokenExpireAt = now() + config.JWT_LIFE_TIME;
-        const refreshTokenExpireAt = now() + config.JWT_REFRESH_LIFE_TIME;
-
-        const token = Session.getToken(tokenParams, tokenExpireAt);
-        const refreshToken = Session.getToken(refreshParams, refreshTokenExpireAt);
-
-        return {
-            token,
-            tokenExpireAt,
-            refreshToken,
-            refreshTokenExpireAt
-        };
-    }
-
-    static getToken(data, expireAt) {
-        return jwt.sign({ exp: expireAt, data }, config.JWT_SECRET_KEY);
-    }
-
-    static verifyToken(token, options = {}) {
-        return new Promise((resolve, reject) => { 
-            jwt.verify(token, config.JWT_SECRET_KEY, options, (error, data) => {
-                if(error) {
-                    return reject(error);
-                }
-
-                resolve(data);
-            }); 
-        })
     }
 }
 

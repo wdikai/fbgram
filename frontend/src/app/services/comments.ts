@@ -25,7 +25,7 @@ export class CommentsService {
 
     getSubscription(photoId) {
         return this.http
-            .get("/signed/urls")
+            .get("/mqtt-links")
             .switchMap((response: any) => new MqttService(response.url, `/photos/${photoId}/comments`).newMessage);
     }
 }

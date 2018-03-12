@@ -37,15 +37,6 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/*"
 
-functions:
-  test:
-    handler: handlers/test.handler
-    events:
-      - http: 
-          path: /test
-          method: get
-          cors: true
-
   login:
     handler: handlers/login.handler
     events:
@@ -88,14 +79,12 @@ functions:
     handler: handlers/presigneIot.handler
     timeout: 30
     events:
-      - http: 
-          path: /api/signed/urls
-          method: options 
-          cors: true
       - http:
-          path: /api/signed/urls
+          path: /api/mqtt-links
           method: get 
           cors: true
+          authorizer:
+            name: authorize
 
   authorize:
     handler: handlers/authorize.handler

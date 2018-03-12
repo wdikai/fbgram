@@ -1,15 +1,17 @@
 module.exports = {
-    "FB_VERSION": "v2.9",
+    "RETURN_STACK": true,
+
+    "FB_VERSION": "xxx",
     "FB_API_KEY": "xxx",
     "FB_SECRET": "xxx",
-    "RETURN_STACK": true,
-    "JWT_LIFE_TIME": 60 * 60,
-    "JWT_REFRESH_LIFE_TIME": 60 * 60 * 24,
+
+    "JWT_LIFE_TIME": 60 * 60 * 6,
     "JWT_SECRET_KEY": "xxx",
 
-
-    "IOT_AWS_REGION": 'localhost',
-    "IOT_ENDPOINT_HOST": 'localhost:1883',
+    "AWS_REGION": 'localhost',
+    "DYNAMO_ENDPOINT_HOST": 'http://localhost:1559',
+    "IOT_ENDPOINT_HOST": 'http://localhost:1884',
+    "IOT_PROTOCOL": "ws",
     "IOT_ACCESS_KEY": 'xxx',
-    "IOT_SECRET_KEY": 'rlVQ+xxx',
+    "IOT_SECRET_KEY": 'xxx',
 }

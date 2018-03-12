@@ -1,6 +1,8 @@
 const v4 = require('aws-signature-v4');
 const crypto = require('crypto');
 const config = require('../config');
+const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
+const logger = new (require('../services/logger'))('get mqtt url');
 
 exports.handler = (event, context, callback) => {
     const url = v4.createPresignedURL(
@@ -17,14 +19,8 @@ exports.handler = (event, context, callback) => {
         }
     );
 
-    const response = {
+    callback(null, responseFormatter({
         statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin" : "*", 
-          "Access-Control-Allow-Credentials" : true
-        },
-        body: JSON.stringify({ url: url }),
-    };
-
-    callback(null, response);
+        body: { url: url },
+    }));
 }
