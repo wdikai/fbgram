@@ -22,4 +22,9 @@ export class MqttService<T> {
             });
         });
     }
+
+    close() {
+        this.client.removeAllListeners();
+        this.client.end(true);
+    }
 }

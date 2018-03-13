@@ -8,18 +8,20 @@ class Comment {
     static getComments(photoId, withUser = false, options) {
         let params = Object.assign({
             TableName: Comment.tableName,
-            ExpressionAttributeValues: { ':photoId': photoId  },
-            FilterExpression: 'photoId = :photoId',
+            IndexName: 'photoIdIndex',
+            ScanIndexForward: false,
+            ExpressionAttributeValues: { ':photoId': photoId },
+            KeyConditionExpression: 'photoId = :photoId',
         }, options);
 
         const userIds = new Set(); //{};
         return dynamoDb
-            .scan(params)
+            .query(params)
             .promise()
             .then(result => ({
                 rows: result.Items ? result.Items.map(i => new Comment(i)) : [],
                 totalCount: result.Count,
-                lastEvaluatedKey: JSON.stringify(result.LastEvaluatedKey) 
+                lastEvaluatedKey: JSON.stringify(result.LastEvaluatedKey)
             }))
             .then(result => {
                 if (withUser && result.rows.length) {
@@ -29,10 +31,10 @@ class Comment {
 
                     return User
                         .getList({
-                            ExpressionAttributeValues: {':userIds': Array.from(userIds).join(', ')},
+                            ExpressionAttributeValues: { ':userIds': Array.from(userIds).join(', ') },
                             FilterExpression: `id IN (:userIds)`
                         })
-                        .then(({rows}) => {
+                        .then(({ rows }) => {
                             result.rows.forEach(c => {
                                 const user = rows.find(u => u.id === c.userId);
                                 c.user = user;

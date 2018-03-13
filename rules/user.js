@@ -16,6 +16,7 @@ exports.pagination = {
 
     lastEvaluatedKey: joi
         .any()
+        .empty('undefined')
         .optional()
 };
 

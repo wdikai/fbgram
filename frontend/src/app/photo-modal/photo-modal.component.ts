@@ -2,24 +2,19 @@ import {
   Component,
   OnInit,
   EventEmitter,
-  OnDestroy
+  OnDestroy,
+  ViewChild,
+  ElementRef
 } from "@angular/core";
-import {
-  BsModalRef
-} from "ngx-bootstrap";
+import { BsModalRef } from "ngx-bootstrap";
 
-import {
-  Observable,
-  Subscription
-} from "rxjs";
-import {
-  AuthService
-} from "../services/auth";
-import {
-  CommentsService
-} from "../services/comments";
+import { Observable } from "rxjs/Observable";
+import "rxjs/add/observable/interval";
+import { Subscription } from "rxjs/Subscription";
+import { AuthService } from "../services/auth";
+import { CommentsService } from "../services/comments";
 
-const UPLOAD_NEW_MESSAGES_EDGE = 200; // px
+const UPLOAD_NEW_MESSAGES_EDGE = 100; // px
 
 @Component({
   selector: "app-photo-modal",
@@ -27,7 +22,9 @@ const UPLOAD_NEW_MESSAGES_EDGE = 200; // px
   styleUrls: ["./photo-modal.component.css"]
 })
 export class PhotoModalComponent implements OnDestroy {
+  @ViewChild("messageContainer") messagesContainer: ElementRef;
 
+  mqtt: any;
   pagination: any;
   inLoading: boolean;
   photo: any;
@@ -42,7 +39,7 @@ export class PhotoModalComponent implements OnDestroy {
 
   constructor(public modalRef: BsModalRef,
     private auth: AuthService,
-    private commentsService: CommentsService) {}
+    private commentsService: CommentsService) { }
 
   setPhoto(photo) {
     console.log(photo.id, this.auth.loginStatus);
@@ -54,15 +51,32 @@ export class PhotoModalComponent implements OnDestroy {
     this.photo = photo;
     this.messages = [];
     this.getComments();
-    this.newMessageSubscription = this.commentsService
+    this.commentsService
       .getSubscription(photo.id)
-      .map((newMessage: any) => {
-          const isNew = newMessage && !this.messages.find(m => m.id === newMessage.id);
-          if (isNew) {
-              this.messages.push(newMessage);
-          }
-      })
-      .subscribe();
+      .subscribe(mqtt => this.changeMqttSubscription(mqtt));
+  }
+
+  unsubscribeMqtt(): any {
+    if (this.newMessageSubscription) {
+      this.newMessageSubscription.unsubscribe();
+    }
+
+    if (this.mqtt) {
+      this.mqtt.close();
+    }
+  }
+
+  changeMqttSubscription(mqtt) {
+    this.unsubscribeMqtt();
+
+    this.mqtt = mqtt;
+    this.newMessageSubscription = mqtt.newMessage.subscribe((newMessage: any) => {
+      console.log(newMessage);
+      const isNew = newMessage && !this.messages.find(m => m.id === newMessage.id);
+      if (isNew) {
+        this.messages.unshift(newMessage);
+      }
+    });
   }
 
   play() {
@@ -83,19 +97,17 @@ export class PhotoModalComponent implements OnDestroy {
       this.interval.unsubscribe();
     }
 
-    if (this.newMessageSubscription) {
-      this.newMessageSubscription.unsubscribe();
-    }
+    this.unsubscribeMqtt();
   }
 
   public onScroll($event: Event): void {
     if (!this.inLoading && $event.srcElement.scrollTop < UPLOAD_NEW_MESSAGES_EDGE) {
-      this.getComments();
+      this.getComments(false);
     }
   }
 
 
-  getComments() {
+  getComments(scrollToBottom = true) {
     if (this.pagination && !this.pagination.lastEvaluatedKey) {
       return;
     }
@@ -107,8 +119,11 @@ export class PhotoModalComponent implements OnDestroy {
       })
       .subscribe((messages) => {
         this.inLoading = false;
-        this.messages = messages.data.concat(this.messages);
+        this.messages = this.messages.concat(messages.data);
         this.pagination = messages.pagination;
+        if (scrollToBottom) {
+          this.scrollToBottom();
+        }
       });
   }
 
@@ -119,7 +134,19 @@ export class PhotoModalComponent implements OnDestroy {
 
     this.commentsService
       .createComment(this.photo.id, messageField.value)
-      .subscribe((response) => messageField.value = "");
+      .subscribe((response) => {
+        messageField.value = "";
+        this.scrollToBottom();
+      });
   }
 
+  scrollToBottom() {
+    setTimeout(() => {
+      console.log({
+        scrollTop: this.messagesContainer.nativeElement.scrollTop,
+        scrollHeight: this.messagesContainer.nativeElement.scrollHeight
+      });
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    }, 100);
+  }
 }

@@ -5,7 +5,7 @@ const Validator = require('../services/validator');
 const config = require('../config');
 const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
 const logger = new (require('../services/logger'))('login');
-const { token } = reqiore('../rules/user');
+const { token } = require('../rules/user');
 
 exports.handler = (event, context, callback) => {
     const body = JSON.parse(event.body) || {};
@@ -29,7 +29,8 @@ exports.handler = (event, context, callback) => {
             }));
         })
         .catch(error => {
-            logger.info(error);
+            logger.error(error);
+            logger.info(body);
             callback(null, errorFormatter(error));
         });
 }

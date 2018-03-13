@@ -18,14 +18,14 @@ class Logger {
 
 function format (value) {
     if(value instanceof Error) {
-        return [value.message, value.stack].join('\n');
+        return [value.message, `status: ${value.status}`, value.stack];
     }
 
     if(value instanceof Object) {
-        return Object.keys(value).map(key => `${key} = ${value[key]}`).join(' ');
+        return Object.keys(value).map(key => `${key} = ${JSON.stringify(value[key])}`).join(' ');
     }
 
-    return value;
+    return JSON.stringify(value);
 }
 
-module.export = Logger;
+module.exports = Logger;

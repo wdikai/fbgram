@@ -5,10 +5,9 @@ const config = require('../config');
 const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
 const logger = new (require('../services/logger'))('get users');
 
-const { search, pagination } = reqiore('../rules/user');
+const { search, pagination } = require('../rules/user');
 
 exports.handler = (event, context, callback) => {
-    console.log('Event:', event)
     const body = event.queryStringParameters || {};
     const validator = new Validator(Object.assign({}, search, pagination));
 
@@ -36,7 +35,8 @@ exports.handler = (event, context, callback) => {
             }));
         })
         .catch(error => {
-            logger.info(error);
+            logger.error(error);
+            logger.info(body);
             callback(null, errorFormatter(error));
         });
 }

@@ -16,7 +16,6 @@ function generatePolicy(principalId, effect, resource, context) {
     };
 }
 
-
 exports.handler = (event, context, callback) => {
     const {
         methodArn,
@@ -27,11 +26,13 @@ exports.handler = (event, context, callback) => {
     return Session
         .get(authorizationToken)
         .then((session) => {
+            const response = generatePolicy(session.user.id, 'Allow', methodArn, session);
             logger.info(session.user, 'methodArn', methodArn, 'token =', authorizationToken);
-            callback(null, generatePolicy(session.user.id, 'Allow', methodArn, session))
+            logger.info(response);
+            callback(null, response)
         })
         .catch((error) => {
-            logger.error('error');
+            logger.error(error);
             callback('Unauthorized');
         });
 }

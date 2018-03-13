@@ -6,7 +6,7 @@ const Broker = require('../services/mqttHelper');
 const config = require('../config');
 const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
 
-const {photo, commentMessage} = reqiore('../rules/user.js');
+const {photo, commentMessage} = require('../rules/user.js');
 
 const logger = new (require('../services/logger'))('post comment');
 
@@ -29,11 +29,12 @@ exports.handler = (event, context, callback) => {
             .then(() => Broker.publish(`/photos/${comment.photoId}/comments`, comment))
         )
         .then(() => {
-            logger.info('newComment', newComment);
+            logger.info({ data: newComment });
             callback(null, responseFormatter({ status: 201, body: { data: newComment } }));
         })
         .catch(error => {
-            logger.info(error);
+            logger.error(error);
+            logger.info(body);
             callback(null, errorFormatter(error));
         });
 }

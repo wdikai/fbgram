@@ -9,13 +9,15 @@ class Validator {
     validate(data) {
         return new Promise((resolve, reject) => {
             const result = joi.validate(data, this.schema, this.options);
-            console.error("Result:", result);
             if (result.error) {
                 const error = new Error(result.error.message);
                 error.status = 400;
                 return reject(error);
             }
 
+            console.info('~~~~~~~~~~~~~~~~~~~~~~')
+            console.info(result.value)
+            console.info('~~~~~~~~~~~~~~~~~~~~~~')
             resolve(result.value);
         })
     }

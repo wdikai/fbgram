@@ -10,7 +10,7 @@ import { MqttService } from "./mqtt";
 export class CommentsService {
     constructor(private http: HttpClient) { }
 
-    getCommentsByPhoto(photoId,  {limit = 10, lastEvaluatedKey}: Pagination = {}): Observable<any> {
+    getCommentsByPhoto(photoId,  {limit = 5, lastEvaluatedKey}: Pagination = {}): Observable<any> {
         const params = new HttpParams()
             .append("photoId", photoId)
             .append("limit", limit && limit.toString())
@@ -23,9 +23,9 @@ export class CommentsService {
         return this.http.post("/comments", { photoId, message });
     }
 
-    getSubscription(photoId) {
+    getSubscription(photoId): Observable<MqttService<any>> {
         return this.http
             .get("/mqtt-links")
-            .switchMap((response: any) => new MqttService(response.url, `/photos/${photoId}/comments`).newMessage);
+            .map((response: any) => new MqttService(response.url, `/photos/${photoId}/comments`));
     }
 }

@@ -9,9 +9,8 @@ import { AuthService } from "../auth";
 @Injectable()
 export class AuthenticationInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const apiReq = req.clone({
-      headers: req.headers.append("Authorization", localStorage.getItem("token") || "")
-    });
+    const token = localStorage.getItem("token") || "";
+    const apiReq = req.clone({ headers: req.headers.append("Authorization", token)});
     return next.handle(apiReq);
   }
 }
@@ -20,7 +19,6 @@ export class AuthenticationInterceptor implements HttpInterceptor {
 export class UrlInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const apiReq = req.clone({ url: `${environment.baseUrl}/api${req.url}` });
-    console.log("UrlInterceptor", apiReq);
     return next.handle(apiReq);
   }
 }

@@ -5,7 +5,7 @@ const config = require('../config');
 const { responseFormatter, errorFormatter } = require('../services/responseFormatter');
 const logger = new (require('../services/logger'))('get comments');
 
-const {photo, pagination} = reqiore('../rules/user.js');
+const {photo, pagination} = require('../rules/user.js');
 
 exports.handler = (event, context, callback) => {
     const body = event.queryStringParameters || {};
@@ -15,7 +15,7 @@ exports.handler = (event, context, callback) => {
         .validate(body)
         .then((body) => Comment.getComments(body.photoId, true, {
             Limit: body.limit,
-            ExclusiveStartKey: body.lastEvaluatedKey
+            ExclusiveStartKey: body.lastEvaluatedKey && JSON.parse(body.lastEvaluatedKey)
         }))
         .then(({ rows, totalCount, lastEvaluatedKey }) => {
             logger.info('totalCount =', totalCount, '; lastEvaluatedKey:', lastEvaluatedKey);
@@ -28,7 +28,8 @@ exports.handler = (event, context, callback) => {
             }));
         })
         .catch(error => {
-            logger.info(error);
+            logger.error(error);
+            logger.info(body);
             callback(null, errorFormatter(error));
         });
 }

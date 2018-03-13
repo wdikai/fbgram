@@ -4,6 +4,7 @@ exports.responseFormatter = (response) => ({
     statusCode: response.status || 200,
     headers: {
         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Typ, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token, X-Amz-User-Agent",
         "Access-Control-Allow-Credentials": true
     },
     body: JSON.stringify(response.body)

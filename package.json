@@ -20,7 +20,6 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "node-gyp": "^3.6.2",
     "serverless": "^1.26.0",
     "serverless-dynamodb-local": "^0.2.27",
     "serverless-dynamodb-ttl": "^0.1.1",

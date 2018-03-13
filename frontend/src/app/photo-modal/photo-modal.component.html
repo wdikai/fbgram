@@ -19,10 +19,10 @@
     </div>
   </div>
   <div class="comments">
-    <div class="comment-messages" (scroll)="onScroll($event)">
+    <div class="comment-messages" (scroll)="onScroll($event)" #messageContainer>
       <div *ngFor="let message of messages" class="message">
-        <div class="sender"><img [src]="message?.sender?.picture">{{message?.sender?.fullName}} ({{message?.createdAt}})</div>
-        <p>{{message?.message}}</p>
+        <div class="sender"><img [src]="message?.sender?.picture"> {{message?.sender?.fullName}}</div>
+        <pre>{{message?.message}}</pre>
       </div>
     </div>
     <div class="text-group">

@@ -14,13 +14,13 @@ exports.handler = (event, context, callback) => {
         {
             'key': config.IOT_ACCESS_KEY,
             'secret': config.IOT_SECRET_KEY,
-            'protocol': 'wss',
+            'protocol': config.IOT_PROTOCOL,
             'region': config.IOT_AWS_REGION,
         }
     );
-
+    logger.info({ url });
     callback(null, responseFormatter({
         statusCode: 200,
-        body: { url: url },
+        body: { url },
     }));
 }
