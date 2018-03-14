@@ -6,6 +6,7 @@ plugins:
   - serverless-dynamodb-ttl
   - serverless-dynamodb-local
   - serverless-offline
+
 custom:
   dynamodb:
     start:
@@ -23,6 +24,7 @@ custom:
 
 provider:
   name: aws
+  region: eu-central-1
   runtime: nodejs6.10
   iamRoleStatements:
     - Effect: Allow
@@ -34,6 +36,10 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/*"
+    - Effect: Allow
+      Action:
+        - iot:Publish
+      Resource: "*"
 
 functions:
   login:
@@ -53,6 +59,8 @@ functions:
           cors: true
           authorizer:
             name: authorize
+            resultTtlInSeconds: 0
+            type: token
 
   postMessage:
     handler: handlers/createComment.handler
@@ -63,6 +71,8 @@ functions:
           cors: true
           authorizer:
             name: authorize
+            resultTtlInSeconds: 0
+            type: token
 
   getMessages:
     handler: handlers/getComments.handler
@@ -73,6 +83,8 @@ functions:
           cors: true
           authorizer:
             name: authorize
+            resultTtlInSeconds: 0
+            type: token
             
   iotPresignedUrl:
     handler: handlers/presigneIot.handler
@@ -84,6 +96,8 @@ functions:
           cors: true
           authorizer:
             name: authorize
+            resultTtlInSeconds: 0
+            type: token
 
   authorize:
     handler: handlers/authorize.handler

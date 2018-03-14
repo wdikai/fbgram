@@ -14,7 +14,7 @@ class Broker {
   static publish(topic, message) {
     const params = { topic, payload: JSON.stringify(message) };
 
-    return new Promise((resolve, reject) => iotData.publish(params, (err, data) => err ? reject(error) : resolve(data)));
+    return new Promise((resolve, reject) => iotData.publish(params, (error, data) => error ? reject(error) : resolve(data)));
   }
 }
 

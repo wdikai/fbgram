@@ -1,5 +1,5 @@
 const Session = require('../models/session');
-const logger = new (require('../services/logger'))('autorizer');
+const logger = new(require('../services/logger'))('autorizer');
 
 function generatePolicy(principalId, effect, resource, context) {
     return {
@@ -8,7 +8,7 @@ function generatePolicy(principalId, effect, resource, context) {
         policyDocument: {
             Version: '2012-10-17',
             Statement: [{
-                Action: 'execute-api:Invoke',
+                Action: ['execute-api:Invoke'],
                 Effect: effect,
                 Resource: resource,
             }]
@@ -26,7 +26,7 @@ exports.handler = (event, context, callback) => {
     return Session
         .get(authorizationToken)
         .then((session) => {
-            const response = generatePolicy(session.user.id, 'Allow', methodArn, session);
+            const response = generatePolicy(session.user.id, 'Allow', methodArn, session.user);
             logger.info(session.user, 'methodArn', methodArn, 'token =', authorizationToken);
             logger.info(response);
             callback(null, response)
