@@ -1,10 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, HostListener } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap";
 import { PhotoModalComponent } from "../photo-modal/photo-modal.component";
-import { AlbumsService } from "../services/albums";
+import { AlbumsService } from "app/services/albums";
 import { ActivatedRoute } from "@angular/router";
 
-const SIZES = { max: 600, min: 200 };
+const LOAD_PHOTOS_EDGE = 200;
 
 @Component({
   selector: "app-album",
@@ -12,6 +12,8 @@ const SIZES = { max: 600, min: 200 };
   styleUrls: ["./album.component.css"]
 })
 export class AlbumComponent implements OnInit {
+  inLoading: any;
+  cursor: any;
   params: any;
   pictures: any;
   pmRef: any;
@@ -23,15 +25,17 @@ export class AlbumComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.params = params;
+      this.pictures = [];
       this.loadAlbum();
     });
   }
 
   loadAlbum() {
     this.albumsService
-      .getAlbumPhotos(this.params.albumId)
+      .getAlbumPhotos(this.params.albumId, {after: this.cursor && this.cursor.after})
       .subscribe((response) => {
-        this.pictures = response.data;
+        this.pictures = this.pictures.concat(response.data);
+        this.cursor = response.cursor;
       });
   }
 
@@ -51,6 +55,15 @@ export class AlbumComponent implements OnInit {
       index = (this.pictures.length + index - 1) % this.pictures.length;
       photoComponent.setPhoto(this.pictures[index]);
     });
+  }
+
+  @HostListener("window:scroll", ["$event"])
+  onScroll($event: any): void {
+    const height = $event.srcElement.scrollingElement.clientHeight;
+    const scrollBottom = $event.srcElement.scrollingElement.scrollHeight - $event.srcElement.scrollingElement.scrollTop - height;
+    if (!this.inLoading && this.cursor && scrollBottom < LOAD_PHOTOS_EDGE) {
+      this.loadAlbum();
+    }
   }
 
 }

@@ -1,9 +1,9 @@
 import { Routes } from "@angular/router";
-import { TopBarComponent } from "./top-bar/top-bar.component";
-import { AlbumsComponent } from "./albums/albums.component";
-import { AlbumComponent } from "./album/album.component";
-import { LoginComponent } from "./login/login.component";
-import { OnlyAuthorized } from "./guards/authorized";
+import { LayoutComponent } from "app/components/layout/layout.component";
+import { AlbumsComponent } from "app/components/albums/albums.component";
+import { AlbumComponent } from "app/components/album/album.component";
+import { LoginComponent } from "app/components/login/login.component";
+import { OnlyAuthorized } from "app/guards/authorized";
 
 export const applicationRoutes: Routes = [
     {
@@ -22,7 +22,7 @@ export const applicationRoutes: Routes = [
     },
     {
         path: "app",
-        component: TopBarComponent,
+        component: LayoutComponent,
         canActivate: [OnlyAuthorized],
         children: [
             {

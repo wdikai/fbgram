@@ -81,6 +81,14 @@ class Session {
         })
     }
 
+    static destroy(token) {
+        const params = { TableName: Session.tableName, Key: { token } };
+
+        return dynamoDb
+            .delete(params)
+            .promise();
+    }
+
     constructor({ userId, token, tokenExpireAt }) {
         this.dataValues = {};
 

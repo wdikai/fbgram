@@ -1,16 +1,16 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { AuthService } from "../services/auth";
-import { UsersService } from "../services/users";
+import { AuthService } from "app/services/auth";
+import { UsersService } from "app/services/users";
 
 const LOAD_NEW_USERS_EDGE = 200; // px
 
 @Component({
   selector: "app-top-bar",
-  templateUrl: "./top-bar.component.html",
-  styleUrls: ["./top-bar.component.css"]
+  templateUrl: "./layout.component.html",
+  styleUrls: ["./layout.component.css"]
 })
-export class TopBarComponent {
+export class LayoutComponent {
   inLoading: boolean;
   showSidebar: boolean;
   pagination: any;

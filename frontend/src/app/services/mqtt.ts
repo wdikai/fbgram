@@ -6,8 +6,9 @@ export class MqttService<T> {
     public newMessage = new BehaviorSubject<T>(null);
 
     constructor(url, chanel) {
-        this.client = mqtt.connect(url);
+        this.client = mqtt.connect(url, {protocol: "wss", port: 443});
 
+        this.client.on("error", (error) => console.log(error))
         this.client.on("connect", () => {
             this.client.subscribe(chanel);
             this.client.on("message", (topic: string, payload: T) => {

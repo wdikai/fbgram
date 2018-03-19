@@ -3,29 +3,30 @@ import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { FacebookModule } from "ngx-facebook";
 
 import { ModalModule } from "ngx-bootstrap";
 
 import { AppComponent } from "app/app.component";
 
 import { applicationRoutes } from "app/app.routes";
-import { TopBarComponent } from "./top-bar/top-bar.component";
-import { LoginComponent } from "./login/login.component";
-import { AlbumsComponent } from "./albums/albums.component";
-import { AlbumComponent } from "./album/album.component";
-import { PhotoModalComponent } from "./photo-modal/photo-modal.component";
-import { AuthService } from "./services/auth";
-import { AlbumsService } from "./services/albums";
-import { CommentsService } from "./services/comments";
-import { UsersService } from "./services/users";
-import { OnlyAuthorized } from "./guards/authorized";
-import { FacebookModule } from "ngx-facebook";
-import { AuthenticationInterceptor, UrlInterceptor } from "./services/interseptors/interseptor";
+import { LayoutComponent } from "app/components/layout/layout.component";
+import { AlbumsComponent } from "app/components/albums/albums.component";
+import { AlbumComponent } from "app/components/album/album.component";
+import { LoginComponent } from "app/components/login/login.component";
+import { PhotoModalComponent } from "app/components/photo-modal/photo-modal.component";
+
+import { AuthService } from "app/services/auth";
+import { AlbumsService } from "app/services/albums";
+import { CommentsService } from "app/services/comments";
+import { UsersService } from "app/services/users";
+import { OnlyAuthorized } from "app/guards/authorized";
+import { AuthenticationInterceptor, UrlInterceptor } from "app/services/interseptors/interseptor";
 
 @NgModule({
   declarations: [
     AppComponent,
-    TopBarComponent,
+    LayoutComponent,
     AlbumsComponent,
     AlbumComponent,
     PhotoModalComponent,
@@ -39,7 +40,7 @@ import { AuthenticationInterceptor, UrlInterceptor } from "./services/intersepto
     ModalModule.forRoot(),
     FacebookModule.forRoot(),
 
-    RouterModule.forRoot(applicationRoutes),
+    RouterModule.forRoot(applicationRoutes, { useHash: true }),
   ],
   providers: [
     {

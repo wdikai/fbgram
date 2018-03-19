@@ -24,7 +24,7 @@ export class AlbumsService {
 
     constructor(private fb: FacebookService) {}
 
-    getAlbums(userId, {after = null, before = null, limit = 20} = {}) {
+    getAlbums(userId, {after = null, before = null, limit = 100} = {}) {
         const fields = ["picture{width,height,url}", "photo_count", "name", "id", "source"];
         return Observable
             .fromPromise(this.fb.api(`/${userId}/albums`, "get", { fields, after, before, limit}))
@@ -39,7 +39,7 @@ export class AlbumsService {
             });
     }
 
-    getAlbumPhotos(albumId, {after = null, before = null, limit = 20 } = {}): Observable<any> {
+    getAlbumPhotos(albumId, {after = null, before = null, limit = 100} = {}): Observable<any> {
         const fields = ["source", "id"];
         const url = `/${albumId}/photos`;
 

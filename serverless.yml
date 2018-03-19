@@ -46,9 +46,21 @@ functions:
     handler: handlers/login.handler
     events:
       - http: 
-          path: /api/login
+          path: /api/sessions
           method: post
+          cors: true          
+
+  logout:
+    handler: handlers/logout.handler
+    events:
+      - http: 
+          path: /api/sessions
+          method: delete
           cors: true
+          authorizer:
+            name: authorize
+            resultTtlInSeconds: 0
+            type: token
 
   getUsers:
     handler: handlers/getUsers.handler

@@ -1,6 +1,6 @@
 
 import { Inject, Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import {FacebookService, LoginStatus, LoginResponse} from "ngx-facebook";
 
 import { Observable } from "rxjs/Observable";
@@ -51,21 +51,25 @@ export class AuthService {
 
     login(accessToken: string): Observable<any> {
         return this.http
-            .post("/login", {accessToken: accessToken})
+            .post("/sessions", {accessToken: accessToken})
             .map((response: any) => {
                 localStorage.setItem("token", response.credentials.token);
                 return this.user = response.profile;
             });
     }
+    
+
+    logout(): Observable<any> {
+        const token = localStorage.getItem("token");
+        const params = new HttpParams().append("token", token);
+        return this.http
+            .delete("/sessions", {params})
+            .switchMap((response: any) => this.fb.logout())
+            .do(() => this.loginStatus = null);
+    }
 
     getStatus(): Observable<LoginStatus> {
         return Observable.fromPromise(this.fb.getLoginStatus());
-    }
-
-    logout(): Observable<any> {
-        return Observable
-            .fromPromise(this.fb.logout())
-            .do(() => this.loginStatus = null);
     }
 
     private init(): void {

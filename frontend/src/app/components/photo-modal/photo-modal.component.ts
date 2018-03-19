@@ -11,8 +11,8 @@ import { BsModalRef } from "ngx-bootstrap";
 import { Observable } from "rxjs/Observable";
 import "rxjs/add/observable/interval";
 import { Subscription } from "rxjs/Subscription";
-import { AuthService } from "../services/auth";
-import { CommentsService } from "../services/comments";
+import { AuthService } from "app/services/auth";
+import { CommentsService } from "app/services/comments";
 
 const UPLOAD_NEW_MESSAGES_EDGE = 100; // px
 

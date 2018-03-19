@@ -1,6 +1,6 @@
 import {CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from "@angular/router";
 import {Injectable} from "@angular/core";
-import {AuthService, AuthStatuses} from "../services/auth";
+import {AuthService, AuthStatuses} from "app/services/auth";
 
 @Injectable()
 export class OnlyAuthorized implements CanActivate, CanActivateChild {

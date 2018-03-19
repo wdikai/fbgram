@@ -11,4 +11,7 @@
   <div *ngFor="let picture of pictures; let i = index;" class="picture" (click)="openPhotoDialog(picture, i)">
     <img [src]="picture.url" alt="picture.name">
   </div>
+  <div *ngIf="cursor" class="picture" (click)="loadAlbum()">
+    <i class="glyphicon glyphicon-repeat"></i>
+  </div>
 </div>

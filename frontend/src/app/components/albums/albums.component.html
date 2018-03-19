@@ -8,4 +8,7 @@
   <div *ngFor="let album of albums; let i = index;" class="picture" [routerLink]="[album.id]">
     <img [src]="album.coverUrl" alt="album.name">
   </div>
+  <div *ngIf="cursor" class="picture" (click)="loadAlbums()">
+    <i class="glyphicon glyphicon-repeat"></i>
+  </div>
 </div>
